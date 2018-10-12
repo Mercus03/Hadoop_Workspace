@@ -1,8 +1,8 @@
 /**
  * 84116
- *2018å¹´9æœˆ29æ—¥
+ *2018å¹?9æœ?29æ—?
  */
-package hadoop01;
+package com.myhadoop.mr;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

@@ -1,8 +1,8 @@
 /**
  * 84116
- *2018å¹´9æœˆ28æ—¥
+ *2018å¹?9æœ?28æ—?
  */
-package hadoop01;
+package com.myhadoop.mr;
 
 /**
  * @author 84116

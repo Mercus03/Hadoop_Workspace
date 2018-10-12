@@ -1,8 +1,8 @@
 /**
  * 84116
- *2018æœˆ9æœˆ28æ—¥
+ *2018æœ?9æœ?28æ—?
  */
-package com.myhadoop;
+package com.myhadoop.mr;
 
 import java.io.*;
 import java.net.URI;

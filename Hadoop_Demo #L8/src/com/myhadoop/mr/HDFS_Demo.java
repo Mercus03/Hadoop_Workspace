@@ -2,7 +2,7 @@
  * 84116
  *2018年9月28日
  */
-package com.myhadoop;
+package com.myhadoop.mr;
 
 import java.io.*;
 import java.net.URI;
