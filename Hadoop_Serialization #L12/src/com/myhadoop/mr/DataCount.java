@@ -7,13 +7,16 @@ package com.myhadoop.mr;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Mapper.Context;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import com.ctc.wstx.dtd.ConcatModel;
 
 /**
  * @author 84116
@@ -24,8 +27,10 @@ public class DataCount {
     /**
      * @param args
      * @throws IOException 
+     * @throws InterruptedException 
+     * @throws ClassNotFoundException 
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         // TODO Auto-generated method stub
         Configuration conf = new Configuration();
         Job job = Job.getInstance(conf);
@@ -33,13 +38,25 @@ public class DataCount {
         job.setJarByClass(DataCount.class);
         
         job.setMapperClass(DCMapper.class);
-        job.
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(DataBean.class);
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        
+        
+        
+        job.setReducerClass(DCReducer.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(DataBean.class);
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        //FileInputFormat.setInputPaths(job, new Path(args[0]));
+    
+        job.waitForCompletion(true);
     }
     
     public static class DCMapper extends Mapper<LongWritable,Text,Text,DataBean>{
         Text text = null;
         @Override
-        protected void map(LongWritable key,Text value,Context context) {
+        protected void map(LongWritable key,Text value,Context context) throws IOException, InterruptedException {
             String line = value.toString();
             String[] fields = line.split("\t");
             
@@ -47,8 +64,38 @@ public class DataCount {
             //第9列（列索引号8）是上行流量，
             //第10列（列索引号9）是下行流量
             String telNo = fields[1];
-            long up
+            long up = Long.parseLong(fields[8]);
+            long down = Long.parseLong(fields[9]);
+            DataBean bean = new DataBean(telNo,up,down);
+            text = new Text(telNo);
+            context.write(text, bean);
         }
+    }
+    
+    public static class DCReducer extends Reducer<Text,DataBean,Text,DataBean>{
+
+		@Override
+		protected void reduce(Text arg0, Iterable<DataBean> arg1, Reducer<Text, DataBean, Text, DataBean>.Context arg2)
+				throws IOException, InterruptedException {
+			// TODO Auto-generated method stub
+			super.reduce(arg0, arg1, arg2);
+		}
+
+    	
+//		@Override
+//		protected void reduce(Text key, Iterable<DataBean> v2s, Reducer<Text, DataBean, Text, DataBean>.Context context)
+//				throws IOException, InterruptedException {
+//			// TODO Auto-generated method stub
+//			long up_sum=0;
+//			long down_sum=0;
+//			for(DataBean bean:v2s) {
+//				up_sum+=bean.getUpPayLoad();
+//				down_sum+=bean.getDownPayLoad();
+//			}
+//			DataBean bean = new DataBean(key.toString(),up_sum,down_sum);
+//			context.write(key, bean);
+//		}
+    	
     }
     
 }
